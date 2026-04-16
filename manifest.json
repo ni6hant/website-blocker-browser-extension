@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Simple Website Blocker",
+  "version": "1.0",
+  "description": "Blocks selected websites.",
+  "permissions": ["tabs"],
+  "background": {
+    "service_worker": "background.js"
+  }
+}
