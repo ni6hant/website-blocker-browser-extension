@@ -8,21 +8,25 @@ const blockedSites = [
   
 
   // Listens for ANY tab update event in the browser.
-  chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  chrome.webNavigation.onBeforeNavigate.addListener((details) => {
     //When a page has fully loaded and the tab actually has a url(some tabs don't), then the if statement becomes true and the rest of the code is executed.
-    if (changeInfo.status === "complete" && tab.url) {
-      
-      // Extract the URL of the current tab
-      const url = tab.url;
+    
+      // Only main page (ignore iframes)
+      if (details.frameId !== 0) return;
   
-      // Check if the current URL matches any blocked site
-      const isBlocked = blockedSites.some(site => url.includes(site));
+      // Extract the URL of the current tab and check if the current URL matches any blocked site
+      const url = details.url;   
+      const hostname = new URL(url).hostname;
+
+      const isBlocked = blockedSites.some(site =>
+        hostname === site || hostname.endsWith("." + site)
+      );
   
       //If it is blocked, display blocked.html page instead of that page
       if (isBlocked) {
-        chrome.tabs.update(tabId, {
+        chrome.tabs.update(details.tabId, {
           url: chrome.runtime.getURL("blocked.html")
         });
       }
-    }
+    
   });
