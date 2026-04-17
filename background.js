@@ -1,11 +1,31 @@
-//List of Blocked Website. Add your own website here in proper format.
-const blockedSites = [
+let blockedSites = [];
+
+const defaultSites = [
     "facebook.com",
     "twitter.com",
     "instagram.com",
     "youtube.com"
   ];
   
+// Load from storage when extension starts
+chrome.storage.local.get(["blockedSites"], (result) => {
+  if (result.blockedSites && result.blockedSites.length > 0) {
+    blockedSites = result.blockedSites;
+  } else {
+    blockedSites = defaultSites;
+    chrome.storage.local.set({ blockedSites: defaultSites });
+  }
+});
+
+//Live Updates
+
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === "local" && changes.blockedSites) {
+    blockedSites = changes.blockedSites.newValue;
+    console.log("Updated blocked sites:", blockedSites);
+  }
+});
+
 
   // Listens for ANY tab update event in the browser.
   chrome.webNavigation.onBeforeNavigate.addListener((details) => {

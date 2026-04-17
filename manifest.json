@@ -3,9 +3,10 @@
   "name": "Simple Website Blocker",
   "version": "1.0",
   "description": "Blocks selected websites.",
-  "permissions": ["tabs", "webNavigation"],
+  "permissions": ["tabs", "webNavigation", "storage"],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"
-  }
+  },
+  "options_page": "options.html"
 }
