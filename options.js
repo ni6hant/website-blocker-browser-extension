@@ -27,10 +27,10 @@ function loadSites() {
 
     sites.forEach(site => { // Loop through each site in the list
       const li = document.createElement("li"); // Create a list item <li> for each site
-      li.textContent = site; // Set text of <li> to the site name
+    //   li.textContent = site; // Set text of <li> to the site name
 
       const btn = document.createElement("button"); // Create a "Remove" button for each site
-      btn.textContent = "Remove"; // Button label
+      btn.textContent = site; // Button label
 
       // When button is clicked → call removeSite()
       // We pass the specific site to remove
