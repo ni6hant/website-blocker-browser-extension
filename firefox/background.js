@@ -1,3 +1,5 @@
+const api = typeof browser !== "undefined" ? browser : chrome;
+
 let blockedSites = [];
 
 const defaultSites = [
@@ -8,18 +10,18 @@ const defaultSites = [
   ];
   
 // Load from storage when extension starts
-chrome.storage.local.get(["blockedSites"], (result) => {
+api.storage.local.get(["blockedSites"], (result) => {
   if (result.blockedSites && result.blockedSites.length > 0) {
     blockedSites = result.blockedSites;
   } else {
     blockedSites = defaultSites;
-    chrome.storage.local.set({ blockedSites: defaultSites });
+    api.storage.local.set({ blockedSites: defaultSites });
   }
 });
 
 //Live Updates
 
-chrome.storage.onChanged.addListener((changes, area) => {
+api.storage.onChanged.addListener((changes, area) => {
   if (area === "local" && changes.blockedSites) {
     blockedSites = changes.blockedSites.newValue;
     console.log("Updated blocked sites:", blockedSites);
@@ -28,7 +30,7 @@ chrome.storage.onChanged.addListener((changes, area) => {
 
 
   // Listens for ANY tab update event in the browser.
-  chrome.webNavigation.onBeforeNavigate.addListener((details) => {
+  api.webNavigation.onBeforeNavigate.addListener((details) => {
     //When a page has fully loaded and the tab actually has a url(some tabs don't), then the if statement becomes true and the rest of the code is executed.
     
       // Only main page (ignore iframes)
@@ -44,8 +46,8 @@ chrome.storage.onChanged.addListener((changes, area) => {
   
       //If it is blocked, display blocked.html page instead of that page
       if (isBlocked) {
-        chrome.tabs.update(details.tabId, {
-          url: chrome.runtime.getURL("blocked.html")
+        api.tabs.update(details.tabId, {
+          url: api.runtime.getURL("blocked.html")
         });
       }
     

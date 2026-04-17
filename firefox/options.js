@@ -10,16 +10,16 @@
 // That’s it.
 
 
-
+const api = typeof browser !== "undefined" ? browser : chrome;
 
 // This function loads the blocked sites from storage
 // and displays them in the UI (the <ul> list)
 function loadSites() {
 
     
-  // chrome.storage.local.get → async call to fetch stored data
+  // api.storage.local.get → async call to fetch stored data
   // ["blockedSites"] → we are asking ONLY for this key
-  chrome.storage.local.get(["blockedSites"], (result) => {
+  api.storage.local.get(["blockedSites"], (result) => {
     const list = document.getElementById("siteList"); // Get the <ul> element where we will display sites
     list.innerHTML = ""; // Clear existing list (important to avoid duplicates)
 
@@ -62,7 +62,7 @@ document.getElementById("addBtn").addEventListener("click", () => {
 
 
   // Get current stored sites
-  chrome.storage.local.get(["blockedSites"], (result) => {
+  api.storage.local.get(["blockedSites"], (result) => {
     const sites = result.blockedSites || []; // Use existing list or empty array
 
     //↑ Always read latest data before modifying
@@ -74,7 +74,7 @@ document.getElementById("addBtn").addEventListener("click", () => {
 
     // Save updated list back to storage
     // After saving → call loadSites() to refresh UI
-      chrome.storage.local.set({ blockedSites: sites }, loadSites); // Add new site to list
+      api.storage.local.set({ blockedSites: sites }, loadSites); // Add new site to list
 
        //↑ Important Pattern: Update Data then refresh UI
 
@@ -87,14 +87,14 @@ document.getElementById("addBtn").addEventListener("click", () => {
 
 // Function to remove a specific site
 function removeSite(siteToRemove) {
-  chrome.storage.local.get(["blockedSites"], (result) => { // Get current list from storage
+  api.storage.local.get(["blockedSites"], (result) => { // Get current list from storage
     const updated = (result.blockedSites || []).filter(site => site !== siteToRemove);   // Create new list excluding the site we want to remove
 
     //↑ .filter() = “keep everything except this one”
 
     // Save updated list back to storage
     // Then reload UI
-    chrome.storage.local.set({ blockedSites: updated }, loadSites);
+    api.storage.local.set({ blockedSites: updated }, loadSites);
 
     //↑     👉 Same pattern again: modify data, save, refresh UI   
   });
