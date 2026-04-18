@@ -1,3 +1,12 @@
+# Website Blocker Chrome Extension
+Excrusiatingly basic Webstie Blocker extension for Chrome. The only reason this was created was because [BrowsecVPN Extension stole passwords and login sessions](https://www.youtube.com/watch?v=LnoBTkJHxTs) and I could never trust a closed source extension ever again.
+<br><Br>I didn't want to do it but using something like this really helped me not lose focus while working.
+<br><Br>And, I really wanted to properly study JS and underlying system and then make it and it might take me months to do so on my own and these "AI" but really LLMs ruined my career both from a job prespective and from a tech youtuber perspective, so why not I use them atleast until they are free.
+<br><Br>P.S: I would love to write something like this blindly on my own at a later stage but for now I really need something right now.
+
+# LLM Declaration
+LLM was used to write the code but not blindly. Each part of the code was understood and tested by me and once I have 100% grasp of this code, this line will be removed.
+
 ## How to Use
 ### Chrome
 1. Download the latest release .crx chrome extension.
@@ -22,14 +31,7 @@
 6. Add-On Button→ Simple Website Blocker→ Options → Add/Remove sites you want from here.
 ---
 
-# Website Blocker Chrome Extension
-Excrusiatingly basic Webstie Blocker extension for Chrome. The only reason this was created was because [BrowsecVPN Extension stole passwords and login sessions](https://www.youtube.com/watch?v=LnoBTkJHxTs) and I could never trust a closed source extension ever again.
-<br><Br>I didn't want to do it but using something like this really helped me not lose focus while working.
-<br><Br>And, I really wanted to properly study JS and underlying system and then make it and it might take me months to do so on my own and these "AI" but really LLMs ruined my career both from a job prespective and from a tech youtuber perspective, so why not I use them atleast until they are free.
-<br><Br>P.S: I would love to write something like this blindly on my own at a later stage but for now I really need something right now.
 
-# LLM Declaration
-LLM was used to write the code but not blindly. Each part of the code was understood and tested by me and once I have 100% grasp of this code, this line will be removed.
 
 
 ## For Developers: Big System Insight
