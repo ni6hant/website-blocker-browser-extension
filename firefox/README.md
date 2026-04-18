@@ -1,5 +1,4 @@
 ## How to Use
-### Chrome
 1. Download the latest release .crx chrome extension.
 2. Open Chrome and go to:
    ```
@@ -8,18 +7,6 @@
 3. Enable **Developer Mode**
 4. Drag and drop the .crx file from before.
 5. Either pin the extension or click details→ Manage Extension and add and remove sites you wish to keep here itself.
----
-
-### Firefox (Temporary: Published on Mozilla Add-Ons. Will update link here if it goes live and this won't be needed)
-1. Download the latest release .zip firefox extension.
-2. Open Firefox and go to:
-   ```
-   about:debugging
-   ```
-3. Click on "This Firefox"
-4. Click on "Load Temporary Add-on..."
-5. Select the zip file.
-6. Add-On Button→ Simple Website Blocker→ Options → Add/Remove sites you want from here.
 ---
 
 # Website Blocker Chrome Extension

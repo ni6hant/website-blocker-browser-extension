@@ -10,7 +10,7 @@
 5. Either pin the extension or click details→ Manage Extension and add and remove sites you wish to keep here itself.
 ---
 
-### Firefox (Temporary: Published on Mozilla Add-Ons. Will update link here if it goes live and this won't be needed)
+### Firefox (Temporary: Goes away after restart)
 1. Download the latest release .zip firefox extension.
 2. Open Firefox and go to:
    ```
