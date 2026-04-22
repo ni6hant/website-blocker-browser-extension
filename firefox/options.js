@@ -9,7 +9,7 @@
 
 // That’s it.
 
-
+//TODO: Why is this line needed?
 const api = typeof browser !== "undefined" ? browser : chrome;
 
 // This function loads the blocked sites from storage
@@ -30,7 +30,7 @@ function loadSites() {
     //   li.textContent = site; // Set text of <li> to the site name
 
       const btn = document.createElement("button"); // Create a "Remove" button for each site
-      btn.textContent = site; // Button label
+      btn.textContent = site; // Button label is the site itself
 
       // When button is clicked → call removeSite()
       // We pass the specific site to remove
@@ -49,7 +49,7 @@ function loadSites() {
 // Every time loadSites() runs:
 // 👉 It rebuilds the UI from scratch
 // This is important:
-// UI is always derived from storage (single source of truth)
+// UI is always derived from storage
 
 
 // Listen for click on "Add" button

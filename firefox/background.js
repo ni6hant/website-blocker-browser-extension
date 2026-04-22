@@ -5,8 +5,10 @@ let blockedSites = [];
 const defaultSites = [
     "facebook.com",
     "twitter.com",
+    "x.com",
     "instagram.com",
-    "youtube.com"
+    "youtube.com",
+    "reddit.com"
   ];
   
 // Load from storage when extension starts
@@ -41,7 +43,7 @@ api.storage.onChanged.addListener((changes, area) => {
       const hostname = new URL(url).hostname;
 
       const isBlocked = blockedSites.some(site =>
-        hostname === site || hostname.endsWith("." + site)
+        hostname === site || hostname.endsWith("." + site) //Sub-domains are also blocked
       );
   
       //If it is blocked, display blocked.html page instead of that page
