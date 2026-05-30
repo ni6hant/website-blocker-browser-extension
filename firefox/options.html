@@ -32,6 +32,30 @@
 
   <ul id="siteList"></ul>
 
+  <hr style="border-color: #333; margin: 24px 0;">
+
+  <div id="streakBox" style="
+    border: 2px solid #2ecc71;
+    border-radius: 10px;
+    padding: 18px 24px;
+    max-width: 480px;
+    margin-bottom: 24px;
+  ">
+    <h3 style="color: #2ecc71; margin: 0 0 8px 0;">&#127942; Blocking Streak</h3>
+    <p style="color: #aaa; margin: 0 0 12px 0; font-size: 14px;">
+      Time since your blocked list was last changed or the extension was reinstalled.
+      Any modification resets the streak to zero.
+    </p>
+    <div id="streakDisplay" style="
+      font-size: 2em;
+      font-weight: bold;
+      color: white;
+      letter-spacing: 2px;
+      font-family: monospace;
+    ">Loading...</div>
+    <p id="streakSince" style="color: #888; font-size: 12px; margin: 8px 0 0 0;"></p>
+  </div>
+
   <script src="options.js"></script>
 
 </body>

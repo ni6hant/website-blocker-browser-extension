@@ -16,7 +16,7 @@ const api = typeof browser !== "undefined" ? browser : chrome;
 // and displays them in the UI (the <ul> list)
 function loadSites() {
 
-    
+
   // api.storage.local.get → async call to fetch stored data
   // ["blockedSites"] → we are asking ONLY for this key
   api.storage.local.get(["blockedSites"], (result) => {
@@ -27,7 +27,7 @@ function loadSites() {
 
     sites.forEach(site => { // Loop through each site in the list
       const li = document.createElement("li"); // Create a list item <li> for each site
-    //   li.textContent = site; // Set text of <li> to the site name
+      //   li.textContent = site; // Set text of <li> to the site name
 
       const btn = document.createElement("button"); // Create a "Remove" button for each site
       btn.textContent = site; // Button label is the site itself
@@ -58,7 +58,7 @@ document.getElementById("addBtn").addEventListener("click", () => {
   const newSite = input.value.trim(); // Get user input and remove extra spaces
 
   if (!newSite) return; // If input is empty → do nothing
-//↑ Prevents: empty entries & accidental clicks
+  //↑ Prevents: empty entries & accidental clicks
 
 
   // Get current stored sites
@@ -70,15 +70,15 @@ document.getElementById("addBtn").addEventListener("click", () => {
 
     if (!sites.includes(newSite)) {
       sites.push(newSite); // Prevent duplicate entries
-    //↑ Only add if not already present
+      //↑ Only add if not already present
 
-    // Save updated list back to storage
-    // After saving → call loadSites() to refresh UI
+      // Save updated list back to storage
+      // After saving → call loadSites() to refresh UI
       api.storage.local.set({ blockedSites: sites }, loadSites); // Add new site to list
 
-       //↑ Important Pattern: Update Data then refresh UI
+      //↑ Important Pattern: Update Data then refresh UI
 
-      
+
     }
   });
 
@@ -102,3 +102,56 @@ function removeSite(siteToRemove) {
 
 // When page loads → populate UI immediately
 loadSites();
+
+// --- Streak Timer Display ---
+
+// Formats a duration in milliseconds into  "Xd Xh Xm Xs"
+function formatDuration(ms) {
+  if (ms < 0) ms = 0;
+  const totalSeconds = Math.floor(ms / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  const parts = [];
+  if (days > 0) parts.push(days + "d");
+  if (hours > 0) parts.push(hours + "h");
+  if (minutes > 0) parts.push(minutes + "m");
+  parts.push(seconds + "s");
+
+  return parts.join(" ");
+}
+
+// Reads streakStart from storage and updates the display elements.
+function updateStreakDisplay() {
+  api.storage.local.get(["streakStart"], (result) => {
+    const display = document.getElementById("streakDisplay");
+    const since = document.getElementById("streakSince");
+
+    if (!result.streakStart) {
+      display.textContent = "0s";
+      since.textContent = "";
+      return;
+    }
+
+    const elapsed = Date.now() - result.streakStart;
+    display.textContent = formatDuration(elapsed);
+
+    // Show a human-readable "since" date
+    const sinceDate = new Date(result.streakStart);
+    since.textContent = "Started: " + sinceDate.toLocaleString();
+  });
+}
+
+// Update immediately, then tick every second
+updateStreakDisplay();
+setInterval(updateStreakDisplay, 1000);
+
+// If the blocked list changes while the options page is open,
+// the streak will have been reset in the background — refresh the display.
+api.storage.onChanged.addListener((changes, area) => {
+  if (area === "local" && (changes.streakStart || changes.blockedSites)) {
+    updateStreakDisplay();
+  }
+});
