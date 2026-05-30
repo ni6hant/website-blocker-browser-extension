@@ -19,9 +19,16 @@ LLM was used to write the code but not blindly. Each part of the code was unders
 5. Either pin the extension or click details→ Manage Extension and add and remove sites you wish to keep here itself.
 ---
 
-### Firefox
-1. Download [Simple Website Blocker extension from Firefox Browser Add-ons](https://addons.mozilla.org/en-US/firefox/addon/website-blocker-ni6hant/?utm_source=addons.mozilla.org&utm_medium=referral&utm_content=search)
-2. Add-On Button→ Simple Website Blocker→ Options → Add/Remove sites you want from here.
+### Firefox (Temporary: Published on Mozilla Add-Ons. Will update link here if it goes live and this won't be needed)
+1. Download the latest release .zip firefox extension.
+2. Open Firefox and go to:
+   ```
+   about:debugging
+   ```
+3. Click on "This Firefox"
+4. Click on "Load Temporary Add-on..."
+5. Select the zip file.
+6. Add-On Button→ Simple Website Blocker→ Options → Add/Remove sites you want from here.
 ---
 
 
