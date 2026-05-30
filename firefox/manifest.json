@@ -11,7 +11,7 @@
       }
     }
   },
-  "version": "1.1",
+  "version": "1.2",
   "description": "This extension blocks website based on a list accessible in Options. It is ad-free & completely source & the code is available at https://github.com/ni6hant/website-blocker-browser-extension . This extension is very very simple. The only reason I made with the help of AI is that I couldn't trust any closed source extensions after my accounts were hacked and all synced passwords stolen due to the BrowsecVPN browser extension.",
   "permissions": [
     "tabs",
@@ -29,5 +29,17 @@
   "options_ui": {
     "page": "options.html",
     "open_in_tab": true
+  },
+  "icons": {
+    "48": "icons/48x48.png",
+    "96": "icons/96x96.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Simple Website Blocker",
+    "default_icon": {
+      "48": "icons/48x48.png",
+      "96": "icons/96x96.png"
+    }
   }
 }
