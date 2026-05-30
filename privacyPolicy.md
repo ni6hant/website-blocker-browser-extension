@@ -1,0 +1,2 @@
+Privacy Policy
+Simple Website Blocker collects no user data. Your block list is stored locally on your device using the browser's built-in storage API and is never transmitted, shared, or accessible by anyone other than you. The extension makes no external network requests.
