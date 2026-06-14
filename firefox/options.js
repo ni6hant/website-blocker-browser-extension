@@ -1,111 +1,163 @@
-// First: What this file is doing overall
-
-// This file is basically:
-
 // UI ↔ Storage bridge
-
 // Reads data from storage → shows it on screen
 // Takes user input → updates storage
 
-// That’s it.
-
-//TODO: Why is this line needed?
 const api = typeof browser !== "undefined" ? browser : chrome;
 
-// This function loads the blocked sites from storage
-// and displays them in the UI (the <ul> list)
+// ═══════════════════════════════════════════
+// BLOCKED SITES
+// ═══════════════════════════════════════════
+
 function loadSites() {
-
-
-  // api.storage.local.get → async call to fetch stored data
-  // ["blockedSites"] → we are asking ONLY for this key
   api.storage.local.get(["blockedSites"], (result) => {
-    const list = document.getElementById("siteList"); // Get the <ul> element where we will display sites
-    list.innerHTML = ""; // Clear existing list (important to avoid duplicates)
+    const list = document.getElementById("siteList");
+    list.innerHTML = "";
 
-    const sites = result.blockedSites || []; // If nothing exists in storage, use empty array
+    const sites = result.blockedSites || [];
 
-    sites.forEach(site => { // Loop through each site in the list
-      const li = document.createElement("li"); // Create a list item <li> for each site
-      //   li.textContent = site; // Set text of <li> to the site name
+    if (sites.length === 0) {
+      const li = document.createElement("li");
+      li.className = "empty-note";
+      li.textContent = "No sites blocked yet.";
+      list.appendChild(li);
+      return;
+    }
 
-      const btn = document.createElement("button"); // Create a "Remove" button for each site
-      btn.textContent = site; // Button label is the site itself
+    sites.forEach(site => {
+      const li = document.createElement("li");
 
-      // When button is clicked → call removeSite()
-      // We pass the specific site to remove
+      const btn = document.createElement("button");
+      btn.textContent = site;
       btn.onclick = () => removeSite(site);
 
-      // Add button inside the <li>
       li.appendChild(btn);
-
-      // Add <li> to the <ul> list
       list.appendChild(li);
     });
   });
 }
 
-// Key idea here
-// Every time loadSites() runs:
-// 👉 It rebuilds the UI from scratch
-// This is important:
-// UI is always derived from storage
-
-
-// Listen for click on "Add" button
 document.getElementById("addBtn").addEventListener("click", () => {
-  const input = document.getElementById("siteInput"); // Get input field
-  const newSite = input.value.trim(); // Get user input and remove extra spaces
+  const input = document.getElementById("siteInput");
+  const newSite = input.value.trim().toLowerCase();
 
-  if (!newSite) return; // If input is empty → do nothing
-  //↑ Prevents: empty entries & accidental clicks
+  if (!newSite) return;
 
-
-  // Get current stored sites
   api.storage.local.get(["blockedSites"], (result) => {
-    const sites = result.blockedSites || []; // Use existing list or empty array
-
-    //↑ Always read latest data before modifying
-
+    const sites = result.blockedSites || [];
 
     if (!sites.includes(newSite)) {
-      sites.push(newSite); // Prevent duplicate entries
-      //↑ Only add if not already present
-
-      // Save updated list back to storage
-      // After saving → call loadSites() to refresh UI
-      api.storage.local.set({ blockedSites: sites }, loadSites); // Add new site to list
-
-      //↑ Important Pattern: Update Data then refresh UI
-
-
+      sites.push(newSite);
+      api.storage.local.set({ blockedSites: sites }, loadSites);
     }
   });
 
-  input.value = "";  //Good UX: Clear input field after adding
+  input.value = "";
 });
 
-// Function to remove a specific site
 function removeSite(siteToRemove) {
-  api.storage.local.get(["blockedSites"], (result) => { // Get current list from storage
-    const updated = (result.blockedSites || []).filter(site => site !== siteToRemove);   // Create new list excluding the site we want to remove
-
-    //↑ .filter() = “keep everything except this one”
-
-    // Save updated list back to storage
-    // Then reload UI
+  api.storage.local.get(["blockedSites"], (result) => {
+    const updated = (result.blockedSites || []).filter(s => s !== siteToRemove);
     api.storage.local.set({ blockedSites: updated }, loadSites);
-
-    //↑     👉 Same pattern again: modify data, save, refresh UI   
   });
 }
 
-// When page loads → populate UI immediately
-loadSites();
+// ═══════════════════════════════════════════
+// TIME LOCKS
+// ═══════════════════════════════════════════
 
-// --- Streak Timer Display ---
+function loadTimeLocks() {
+  api.storage.local.get(["timeLocks"], (result) => {
+    const locks = result.timeLocks || [];
+    const list = document.getElementById("timeLockList");
+    list.innerHTML = "";
 
-// Formats a duration in milliseconds into  "Xd Xh Xm Xs"
+    if (locks.length === 0) {
+      const li = document.createElement("li");
+      li.className = "empty-note";
+      li.textContent = "No time locks set — sites are blocked at all times.";
+      list.appendChild(li);
+      return;
+    }
+
+    locks.forEach((lock, index) => {
+      const li = document.createElement("li");
+      li.className = "lock-row";
+
+      // Time range display
+      const timeSpan = document.createElement("span");
+      timeSpan.className = "lock-time " + (lock.enabled ? "lock-enabled" : "lock-disabled");
+      timeSpan.textContent = `${lock.startTime} – ${lock.endTime}`;
+
+      // Optional label
+      const labelSpan = document.createElement("span");
+      labelSpan.className = "lock-label-text";
+      labelSpan.textContent = lock.label ? `(${lock.label})` : "";
+
+      // Toggle button
+      const toggleBtn = document.createElement("button");
+      toggleBtn.textContent = lock.enabled ? "Disable" : "Enable";
+      toggleBtn.className = lock.enabled ? "toggle-btn-enabled" : "toggle-btn-disabled";
+      toggleBtn.onclick = () => toggleTimeLock(index);
+
+      // Remove button
+      const removeBtn = document.createElement("button");
+      removeBtn.textContent = "Remove";
+      removeBtn.onclick = () => removeTimeLock(index);
+
+      li.appendChild(timeSpan);
+      li.appendChild(labelSpan);
+      li.appendChild(toggleBtn);
+      li.appendChild(removeBtn);
+      list.appendChild(li);
+    });
+  });
+}
+
+document.getElementById("addLockBtn").addEventListener("click", () => {
+  const startTime = document.getElementById("lockStart").value;
+  const endTime = document.getElementById("lockEnd").value;
+  const label = document.getElementById("lockLabel").value.trim();
+
+  if (!startTime || !endTime) {
+    alert("Please set both a start and end time.");
+    return;
+  }
+  if (startTime === endTime) {
+    alert("Start and end time cannot be the same.");
+    return;
+  }
+
+  api.storage.local.get(["timeLocks"], (result) => {
+    const locks = result.timeLocks || [];
+    locks.push({ startTime, endTime, label, enabled: true });
+    api.storage.local.set({ timeLocks: locks }, loadTimeLocks);
+  });
+
+  document.getElementById("lockStart").value = "";
+  document.getElementById("lockEnd").value = "";
+  document.getElementById("lockLabel").value = "";
+});
+
+function removeTimeLock(index) {
+  api.storage.local.get(["timeLocks"], (result) => {
+    const locks = result.timeLocks || [];
+    locks.splice(index, 1);
+    api.storage.local.set({ timeLocks: locks }, loadTimeLocks);
+  });
+}
+
+function toggleTimeLock(index) {
+  api.storage.local.get(["timeLocks"], (result) => {
+    const locks = result.timeLocks || [];
+    locks[index].enabled = !locks[index].enabled;
+    api.storage.local.set({ timeLocks: locks }, loadTimeLocks);
+  });
+}
+
+// ═══════════════════════════════════════════
+// STREAK TIMER DISPLAY
+// ═══════════════════════════════════════════
+
 function formatDuration(ms) {
   if (ms < 0) ms = 0;
   const totalSeconds = Math.floor(ms / 1000);
@@ -123,7 +175,6 @@ function formatDuration(ms) {
   return parts.join(" ");
 }
 
-// Reads streakStart from storage and updates the display elements.
 function updateStreakDisplay() {
   api.storage.local.get(["streakStart"], (result) => {
     const display = document.getElementById("streakDisplay");
@@ -138,20 +189,24 @@ function updateStreakDisplay() {
     const elapsed = Date.now() - result.streakStart;
     display.textContent = formatDuration(elapsed);
 
-    // Show a human-readable "since" date
     const sinceDate = new Date(result.streakStart);
     since.textContent = "Started: " + sinceDate.toLocaleString();
   });
 }
 
-// Update immediately, then tick every second
 updateStreakDisplay();
 setInterval(updateStreakDisplay, 1000);
 
-// If the blocked list changes while the options page is open,
-// the streak will have been reset in the background — refresh the display.
+// Refresh displays live if storage changes while this tab is open
 api.storage.onChanged.addListener((changes, area) => {
-  if (area === "local" && (changes.streakStart || changes.blockedSites)) {
-    updateStreakDisplay();
-  }
+  if (area !== "local") return;
+  if (changes.streakStart || changes.blockedSites) updateStreakDisplay();
+  if (changes.timeLocks) loadTimeLocks();
 });
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+
+loadSites();
+loadTimeLocks();

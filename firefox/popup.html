@@ -21,14 +21,34 @@
     .subtitle {
       color: #555;
       font-size: 11px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
+    /* Status box */
+    .status-box {
+      border: 1.5px solid #333;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+    }
+
+    #statusDisplay {
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+
+    #statusDetail {
+      font-size: 11px;
+      color: #666;
+    }
+
+    /* Streak box */
     .streak-box {
       border: 1.5px solid #2ecc71;
       border-radius: 8px;
       padding: 14px;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       text-align: center;
     }
 
@@ -80,6 +100,13 @@
   <h2>&#128683; Website Blocker</h2>
   <div class="subtitle">stay on track.</div>
 
+  <!-- Live blocking status -->
+  <div class="status-box">
+    <div id="statusDisplay">Checking...</div>
+    <div id="statusDetail"></div>
+  </div>
+
+  <!-- Streak timer -->
   <div class="streak-box">
     <div class="streak-label">&#127942; Blocking Streak</div>
     <div id="streakDisplay">Loading...</div>

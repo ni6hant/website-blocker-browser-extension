@@ -12,6 +12,35 @@ pre{
 color:yellow;
 font-size:large;
 }
+#streakBox {
+    display: block;
+    width: fit-content;
+    border: 1.5px solid #2ecc71;
+    border-radius: 8px;
+    padding: 10px 24px;
+    margin: 16px auto;
+    text-align: center;
+}
+#streakLabel {
+    color: #888;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+#streakDisplay {
+    color: white;
+    font-size: 1.6em;
+    font-weight: bold;
+    font-family: monospace;
+    letter-spacing: 2px;
+}
+#streakSince {
+    color: #555;
+    font-size: 11px;
+    margin-top: 4px;
+    font-family: monospace;
+}
   </style>
 </head>
 <body style="background-color: black;">
@@ -26,37 +55,30 @@ font-size:large;
 </p>
 
 <p>
-    <pre>
-*******************************************************************************
-|                   |                  |                     |
-_________|________________.=""_;=.______________|_____________________|_______
-|                   |  ,-"_,=""     `"=.|                  |
-|___________________|__"=._o`"-._        `"=.______________|___________________
-        |                `"=._o`"=._      _`"=._                     |
-_________|_____________________:=._o "=._."_.-="'"=.__________________|_______
-|                   |    __.--" , ; `"=._o." ,-"""-._ ".   |
-|___________________|_._"  ,. .` ` `` ,  `"-._"-._   ". '__|___________________
-        |           |o`"=._` , "` `; .". ,  "-._"-._; ;              |
-_________|___________| ;`-.o`"=._; ." ` '`."\` . "-._ /_______________|_______
-|                   | |o;    `"-.o`"=._``  '` " ,__.--o;   |
-|___________________|_| ;     (#) `-.o `"=.`_.--"_o.-; ;___|___________________
-____/______/______/___|o;._    "      `".o|o_.--"    ;o;____/______/______/____
-/______/______/______/_"=._o--._        ; | ;        ; ;/______/______/______/_
-____/______/______/______/__"=._o--._   ;o|o;     _._;o;____/______/______/____
-/______/______/______/______/____"=._o._; | ;_.--"o.--"_/______/______/______/_
-____/______/______/______/______/_____"=.o|o_.--""___/______/______/______/____
-/______/______/______/______/______/______/______/______/______/______/[TomekK]
-*******************************************************************************
-    </pre>
-
-    <p>
-    And I can tell you from experience, that this is not a permanent solution. The solution is finding something that you get so invested in that you don't even need to check these blocked pages. You blocked them for a reason.
-</p>
-
 <p>
-    -ni6hant
+  <div id="streakBox">
+    <div id="streakLabel">&#127942; Blocking Streak</div>
+    <div id="streakDisplay">...</div>
+    <div id="streakSince"></div>
+  </div>
 </p>
 
     </p>
+
+  <script src="blocked.js"></script>
+
+
+
+
+
+<p>
+    
+    And I can tell you from experience, that this is not a permanent solution. The solution is finding something that you get so invested in that you don't even need to check these blocked pages. You blocked them for a reason.
+<br>-ni6hant
+
+
+</p>
+
+
 </body>
 </html>

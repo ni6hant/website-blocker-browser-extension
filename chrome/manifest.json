@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Simple Website Blocker: Open Source & Ad-Free",
-  "version": "1.3",
-  "description": "This extension blocks website based on a list accessible in Options. It is ad-free & completely open source & ad-free.",
+  "version": "1.4",
+  "description": "This extension blocks website based on a list and time of the day. It is ad-free & completely open source & ad-free.",
   "permissions": [
     "tabs",
     "webNavigation",
@@ -24,7 +24,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Simple Website Blocker",
+    "default_title": "Simple Website Timed Blocker",
     "default_icon": {
       "48": "icons/48x48.png",
       "96": "icons/96x96.png",

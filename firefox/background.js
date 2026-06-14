@@ -1,6 +1,7 @@
 const api = typeof browser !== "undefined" ? browser : chrome;
 
 let blockedSites = [];
+let timeLocks = [];
 
 const defaultSites = [
   "facebook.com",
@@ -13,14 +14,11 @@ const defaultSites = [
 
 // --- Streak Timer Helpers ---
 
-// Saves the current timestamp as the streak start (i.e. resets the streak to now)
 function resetStreakTimer() {
   api.storage.local.set({ streakStart: Date.now() });
   console.log("Streak timer reset.");
 }
 
-// Called once on startup: ensures a streakStart exists in storage.
-// If it doesn't exist yet (fresh install or was wiped), start the clock now.
 function initStreakTimer() {
   api.storage.local.get(["streakStart"], (result) => {
     if (!result.streakStart) {
@@ -29,72 +27,108 @@ function initStreakTimer() {
   });
 }
 
+// --- Time Lock Helpers ---
+
+// Returns true if the current LOCAL time falls within this lock's window.
+// Handles overnight ranges (e.g. 22:00–06:00) automatically.
+function isWithinTimeLock(lock) {
+  if (!lock.enabled) return false;
+
+  const now = new Date();
+  const current = now.getHours() * 60 + now.getMinutes(); // minutes since midnight
+
+  const [startH, startM] = lock.startTime.split(":").map(Number);
+  const [endH, endM] = lock.endTime.split(":").map(Number);
+
+  const start = startH * 60 + startM;
+  const end = endH * 60 + endM;
+
+  if (start <= end) {
+    // Normal range e.g. 09:00–17:00
+    return current >= start && current < end;
+  } else {
+    // Overnight range e.g. 22:00–06:00
+    return current >= start || current < end;
+  }
+}
+
+// If no time locks are defined → always block (original behaviour).
+// If time locks exist → only block when at least one lock is currently active.
+function isBlockingActiveNow() {
+  if (timeLocks.length === 0) return true;
+  return timeLocks.some(lock => isWithinTimeLock(lock));
+}
+
 // --- On install / update / browser-start ---
-// onInstalled fires when the extension is first installed OR re-installed after removal.
-// We reset the streak in all those cases so re-installing counts as breaking the streak.
+
 api.runtime.onInstalled.addListener((details) => {
   if (details.reason === "install") {
-    // Brand-new install: start the streak clock now
     resetStreakTimer();
   } else if (details.reason === "update") {
-    // Extension updated (not reinstalled) — keep the existing streak, don't reset
     initStreakTimer();
   }
 });
 
-// onStartup fires when the browser launches with the extension already installed.
-// We just make sure streakStart is set (won't overwrite an existing one).
 api.runtime.onStartup.addListener(() => {
   initStreakTimer();
 });
 
-// --- Load blocked sites from storage when extension starts ---
-api.storage.local.get(["blockedSites"], (result) => {
+// --- Load from storage when extension starts ---
+
+api.storage.local.get(["blockedSites", "timeLocks"], (result) => {
   if (result.blockedSites && result.blockedSites.length > 0) {
     blockedSites = result.blockedSites;
   } else {
     blockedSites = defaultSites;
     api.storage.local.set({ blockedSites: defaultSites });
   }
-  // Ensure streak timer is always initialised on background script load
+
+  timeLocks = result.timeLocks || [];
+
   initStreakTimer();
 });
 
 // --- Live Updates ---
-// Any change to blockedSites (add or remove) resets the streak,
-// because the user modified their commitment.
+
 api.storage.onChanged.addListener((changes, area) => {
-  if (area === "local" && changes.blockedSites) {
+  if (area !== "local") return;
+
+  if (changes.blockedSites) {
     blockedSites = changes.blockedSites.newValue;
     console.log("Updated blocked sites:", blockedSites);
-    // Only reset when the list actually changes content, not just on init
+    // Reset streak on any real change (not the first-ever write)
     if (changes.blockedSites.oldValue !== undefined) {
+      resetStreakTimer();
+    }
+  }
+
+  if (changes.timeLocks) {
+    timeLocks = changes.timeLocks.newValue || [];
+    console.log("Updated time locks:", timeLocks);
+    // Changing time lock rules counts as modifying your commitment
+    if (changes.timeLocks.oldValue !== undefined) {
       resetStreakTimer();
     }
   }
 });
 
+// --- Navigation Listener ---
 
-// Listens for ANY tab update event in the browser.
 api.webNavigation.onBeforeNavigate.addListener((details) => {
-  //When a page has fully loaded and the tab actually has a url(some tabs don't), then the if statement becomes true and the rest of the code is executed.
-
-  // Only main page (ignore iframes)
+  // Only intercept main page navigations, not iframes
   if (details.frameId !== 0) return;
 
-  // Extract the URL of the current tab and check if the current URL matches any blocked site
   const url = details.url;
   const hostname = new URL(url).hostname;
 
   const isBlocked = blockedSites.some(site =>
-    hostname === site || hostname.endsWith("." + site) //Sub-domains are also blocked
+    hostname === site || hostname.endsWith("." + site)
   );
 
-  //If it is blocked, display blocked.html page instead of that page
-  if (isBlocked) {
+  // Block only if the site is on the list AND we are within an active time window
+  if (isBlocked && isBlockingActiveNow()) {
     api.tabs.update(details.tabId, {
       url: api.runtime.getURL("blocked.html")
     });
   }
-
 });

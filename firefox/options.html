@@ -4,60 +4,209 @@
 <head>
   <title>Manage Blocked Sites</title>
   <style>
-    h2,
-    ul,
-    script,
-    li,
-    strong {
+    body {
+      background-color: black;
+      font-family: monospace;
+      padding: 24px;
+      max-width: 560px;
+    }
+
+    h2, h3 {
       color: white;
     }
-  </style>
-</head>
 
-<body style="background-color: black;">
+    ul {
+      color: white;
+      padding-left: 0;
+      list-style: none;
+    }
 
-  <h2>Blocked Websites</h2>
+    li {
+      color: white;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-  <!-- Input to add new site -->
-  <input type="text" id="siteInput" placeholder="example.com">
-  <button id="addBtn">Add</button>
+    strong, p {
+      color: #aaa;
+    }
 
-  <br>
-  <br>
-  <strong>Remove Sites by Clicking the Button</strong>
-  <p>
-    Note: Adding www. before website blocks only the main domain for example, if I put www.youtube.com below, it only
-    blocks Youtube but not studio.youtube.com .
-  </p>
+    input[type="text"], input[type="time"] {
+      background: #1a1a1a;
+      color: white;
+      border: 1px solid #333;
+      border-radius: 4px;
+      padding: 6px 10px;
+      font-family: monospace;
+      font-size: 13px;
+    }
 
-  <ul id="siteList"></ul>
+    input[type="text"]::placeholder {
+      color: #555;
+    }
 
-  <hr style="border-color: #333; margin: 24px 0;">
+    button {
+      background: #1a1a1a;
+      color: #ccc;
+      border: 1px solid #333;
+      border-radius: 4px;
+      padding: 6px 12px;
+      font-family: monospace;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
 
-  <div id="streakBox" style="
-    border: 2px solid #2ecc71;
-    border-radius: 10px;
-    padding: 18px 24px;
-    max-width: 480px;
-    margin-bottom: 24px;
-  ">
-    <h3 style="color: #2ecc71; margin: 0 0 8px 0;">&#127942; Blocking Streak</h3>
-    <p style="color: #aaa; margin: 0 0 12px 0; font-size: 14px;">
-      Time since your blocked list was last changed or the extension was reinstalled.
-      Any modification resets the streak to zero.
-    </p>
-    <div id="streakDisplay" style="
+    button:hover {
+      background: #2ecc71;
+      color: #111;
+      border-color: #2ecc71;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #222;
+      margin: 28px 0;
+    }
+
+    .section-note {
+      color: #666;
+      font-size: 12px;
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    .lock-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .lock-time {
+      font-size: 14px;
+      font-weight: bold;
+      min-width: 110px;
+    }
+
+    .lock-label-text {
+      color: #888;
+      font-size: 12px;
+    }
+
+    .lock-enabled {
+      color: #2ecc71;
+    }
+
+    .lock-disabled {
+      color: #555;
+    }
+
+    .toggle-btn-enabled {
+      color: #e67e22;
+      border-color: #e67e22;
+    }
+
+    .toggle-btn-enabled:hover {
+      background: #e67e22;
+      color: #111;
+      border-color: #e67e22;
+    }
+
+    .toggle-btn-disabled {
+      color: #2ecc71;
+      border-color: #2ecc71;
+    }
+
+    .toggle-btn-disabled:hover {
+      background: #2ecc71;
+      color: #111;
+    }
+
+    #streakBox {
+      border: 2px solid #2ecc71;
+      border-radius: 10px;
+      padding: 18px 24px;
+      margin-bottom: 24px;
+    }
+
+    #streakDisplay {
       font-size: 2em;
       font-weight: bold;
       color: white;
       letter-spacing: 2px;
       font-family: monospace;
-    ">Loading...</div>
-    <p id="streakSince" style="color: #888; font-size: 12px; margin: 8px 0 0 0;"></p>
+    }
+
+    #streakSince {
+      color: #888;
+      font-size: 12px;
+      margin: 8px 0 0 0;
+    }
+
+    .empty-note {
+      color: #555;
+      font-size: 13px;
+      font-style: italic;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── BLOCKED SITES ── -->
+  <h2>Blocked Websites</h2>
+
+  <input type="text" id="siteInput" placeholder="example.com">
+  <button id="addBtn">Add</button>
+
+  <br><br>
+  <strong>Remove a site by clicking its button</strong>
+  <p class="section-note">
+    Note: Adding www. before a domain blocks only that exact domain.
+    Without www. all subdomains are also blocked (e.g. studio.youtube.com).
+  </p>
+
+  <ul id="siteList"></ul>
+
+  <hr>
+
+  <!-- ── TIME LOCKS ── -->
+  <h2>&#128336; Time Locks</h2>
+  <p class="section-note">
+    Set time windows during which ALL blocked sites are active.<br>
+    Outside these windows the sites are accessible.<br>
+    If no time locks are set, sites are blocked at all times (default).
+  </p>
+
+  <div class="lock-row">
+    <label style="color:#888; font-size:12px;">From</label>
+    <input type="time" id="lockStart">
+    <label style="color:#888; font-size:12px;">To</label>
+    <input type="time" id="lockEnd">
+    <input type="text" id="lockLabel" placeholder="Label (optional)" style="width:160px;">
+    <button id="addLockBtn">Add Lock</button>
+  </div>
+
+  <ul id="timeLockList"></ul>
+
+  <hr>
+
+  <!-- ── STREAK ── -->
+  <div id="streakBox">
+    <h3 style="color: #2ecc71; margin: 0 0 8px 0;">&#127942; Blocking Streak</h3>
+    <p style="color: #aaa; margin: 0 0 12px 0; font-size: 14px;">
+      Time since your blocked list or time locks were last changed, or the extension was reinstalled.
+      Any modification resets the streak to zero.
+    </p>
+    <div id="streakDisplay">Loading...</div>
+    <p id="streakSince"></p>
   </div>
 
   <script src="options.js"></script>
 
 </body>
-
 </html>
