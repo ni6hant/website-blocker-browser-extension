@@ -126,6 +126,56 @@
       color: #111;
     }
 
+    .day-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .day-label-text {
+      color: #888;
+      font-size: 12px;
+    }
+
+    .day-btn {
+      min-width: 40px;
+      padding: 5px 8px;
+      font-size: 12px;
+    }
+
+    .day-on {
+      background: #2ecc71;
+      color: #111;
+      border-color: #2ecc71;
+      font-weight: bold;
+    }
+
+    .day-on:hover {
+      background: #27ae60;
+      border-color: #27ae60;
+    }
+
+    .day-off {
+      background: #1a1a1a;
+      color: #555;
+      border-color: #333;
+    }
+
+    .lock-days {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .day-mini {
+      min-width: 32px;
+      padding: 3px 5px;
+      font-size: 11px;
+    }
+
     #streakBox {
       border: 2px solid #2ecc71;
       border-radius: 10px;
@@ -178,9 +228,14 @@
   <h2>&#128336; Time Locks</h2>
   <p class="section-note">
     Set time windows during which ALL blocked sites are active.<br>
-    Outside these windows the sites are accessible.<br>
+    Pick the days each lock applies to (all days are on by default).<br>
+    Outside these windows/days the sites are accessible.<br>
     If no time locks are set, sites are blocked at all times (default).
   </p>
+
+  <div class="day-row" id="newLockDays">
+    <span class="day-label-text">Days:</span>
+  </div>
 
   <div class="lock-row">
     <label style="color:#888; font-size:12px;">From</label>
