@@ -147,7 +147,7 @@ function loadTimeLocks() {
       // Time range display
       const timeSpan = document.createElement("span");
       timeSpan.className = "lock-time " + (lock.enabled ? "lock-enabled" : "lock-disabled");
-      timeSpan.textContent = `${lock.startTime} – ${lock.endTime}`;
+      timeSpan.textContent = `${lock.startTime} \u2013 ${lock.endTime}`;
 
       // Optional label
       const labelSpan = document.createElement("span");
