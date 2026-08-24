@@ -1,5 +1,6 @@
-# AI Usage Declaration
-Calude AI (free) was used to write the code but not blindly. Each part of the code was understood, modified wherever necessary and tested.
+# LLM Usage Declaration
+Various LLMs(both local & cloud) were used to write the code here. Each part of the code was understood, modified wherever necessary and tested.
+Note: However, once I am done with my back-end developer course, I pinky promise I will review each code line by line and fix them as I see fit thereby removing all traces of LLMs from it.
 
 # Download and Leave a Review
 [Chrome](https://chromewebstore.google.com/detail/simple-website-blocker-op/oaaamgdijoibhlgdiejnmfjlpennkikl?authuser=0&hl=en-GB)
