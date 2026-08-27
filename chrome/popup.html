@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Website Blocker</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: #111;
+      font-family: monospace;
+      width: 260px;
+      padding: 20px;
+    }
+
+    h2 {
+      color: #2ecc71;
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      color: #555;
+      font-size: 11px;
+      margin-bottom: 14px;
+    }
+
+    /* Status box */
+    .status-box {
+      border: 1.5px solid #333;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+    }
+
+    #statusDisplay {
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+
+    #statusDetail {
+      font-size: 11px;
+      color: #666;
+    }
+
+    /* Streak box */
+    .streak-box {
+      border: 1.5px solid #2ecc71;
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .streak-label {
+      color: #888;
+      font-size: 11px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    #streakDisplay {
+      color: white;
+      font-size: 1.8em;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    #streakSince {
+      color: #555;
+      font-size: 10px;
+      margin-top: 6px;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background: #1a1a1a;
+      color: #ccc;
+      border: 1px solid #333;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: monospace;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .btn:hover {
+      background: #2ecc71;
+      color: #111;
+      border-color: #2ecc71;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>&#128683; Website Blocker</h2>
+  <div class="subtitle">stay on track.</div>
+
+  <!-- Live blocking status -->
+  <div class="status-box">
+    <div id="statusDisplay">Checking...</div>
+    <div id="statusDetail"></div>
+  </div>
+
+  <!-- Streak timer -->
+  <div class="streak-box">
+    <div class="streak-label">&#127942; Blocking Streak</div>
+    <div id="streakDisplay">Loading...</div>
+    <div id="streakSince"></div>
+  </div>
+
+  <button class="btn" id="optionsBtn">&#9881; Manage Blocked Sites</button>
+
+  <script src="popup.js"></script>
+</body>
+</html>

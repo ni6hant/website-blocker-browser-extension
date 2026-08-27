@@ -4,7 +4,6 @@
   "version": "1.4",
   "description": "This extension blocks website based on a list and time of the day. It is ad-free & completely open source & ad-free.",
   "permissions": [
-    "tabs",
     "webNavigation",
     "storage"
   ],
