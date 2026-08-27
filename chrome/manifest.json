@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Simple Website Blocker: Open Source & Ad-Free",
-  "version": "1.4",
+  "version": "1.5",
   "description": "This extension blocks website based on a list and time of the day. It is ad-free & completely open source & ad-free.",
   "permissions": [
     "webNavigation",
