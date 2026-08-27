@@ -1,5 +1,9 @@
 const api = typeof browser !== "undefined" ? browser : chrome;
 
+// Matches Date.getDay(): 0 = Sunday … 6 = Saturday
+const DAY_CODES = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+const ALL_DAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+
 // ═══════════════════════════════════════════
 // TIME LOCK STATUS
 // (mirrors the logic in background.js — JS Date is always local time)
@@ -7,6 +11,12 @@ const api = typeof browser !== "undefined" ? browser : chrome;
 
 function isWithinTimeLock(lock) {
   if (!lock.enabled) return false;
+
+  // Weekday check — locks saved before this feature have no `days` → all days apply.
+  if (Array.isArray(lock.days)) {
+    const today = DAY_CODES[new Date().getDay()];
+    if (lock.days.length === 0 || !lock.days.includes(today)) return false;
+  }
 
   const now = new Date();
   const current = now.getHours() * 60 + now.getMinutes();
@@ -58,6 +68,7 @@ function updateStatus() {
         return;
       }
 
+      // Find which lock fires next (respecting each lock's active days)
       const now = new Date();
       const current = now.getHours() * 60 + now.getMinutes();
 
@@ -65,13 +76,22 @@ function updateStatus() {
       let minDiff = Infinity;
 
       for (const lock of enabledLocks) {
+        const days = Array.isArray(lock.days) && lock.days.length > 0 ? lock.days : [...ALL_DAYS];
         const [h, m] = lock.startTime.split(":").map(Number);
         const start = h * 60 + m;
-        let diff = start - current;
-        if (diff <= 0) diff += 24 * 60; // Wrap past midnight
-        if (diff < minDiff) {
-          minDiff = diff;
-          nextLock = lock;
+
+        for (let offset = 0; offset < 7; offset++) {
+          const dayCode = DAY_CODES[(now.getDay() + offset) % 7];
+          if (!days.includes(dayCode)) continue;
+
+          let diff = offset * 24 * 60 + (start - current);
+          if (diff <= 0) continue; // Already started earlier today
+
+          if (diff < minDiff) {
+            minDiff = diff;
+            nextLock = lock;
+          }
+          break; // Only the earliest occurrence of this lock matters
         }
       }
 

@@ -29,10 +29,20 @@ function initStreakTimer() {
 
 // --- Time Lock Helpers ---
 
-// Returns true if the current LOCAL time falls within this lock's window.
+// Matches Date.getDay(): 0 = Sunday … 6 = Saturday
+const DAY_CODES = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+
+// Returns true if the current LOCAL time falls within this lock's window
+// on one of its active weekdays.
 // Handles overnight ranges (e.g. 22:00–06:00) automatically.
 function isWithinTimeLock(lock) {
   if (!lock.enabled) return false;
+
+  // Weekday check — locks saved before this feature have no `days` → all days apply.
+  if (Array.isArray(lock.days)) {
+    const today = DAY_CODES[new Date().getDay()];
+    if (lock.days.length === 0 || !lock.days.includes(today)) return false;
+  }
 
   const now = new Date();
   const current = now.getHours() * 60 + now.getMinutes(); // minutes since midnight

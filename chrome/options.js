@@ -65,6 +65,67 @@ function removeSite(siteToRemove) {
 // TIME LOCKS
 // ═══════════════════════════════════════════
 
+const ALL_DAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+
+// Days selected for the lock currently being added — all ON by default
+let newLockDays = [...ALL_DAYS];
+
+function buildNewLockDayButtons() {
+  const row = document.getElementById("newLockDays");
+
+  ALL_DAYS.forEach(day => {
+    const btn = document.createElement("button");
+    btn.textContent = day;
+    btn.className = "day-btn day-on";
+    btn.dataset.day = day;
+
+    btn.onclick = () => {
+      if (newLockDays.includes(day)) {
+        newLockDays = newLockDays.filter(d => d !== day);
+        btn.classList.remove("day-on");
+        btn.classList.add("day-off");
+      } else {
+        newLockDays.push(day);
+        btn.classList.add("day-on");
+        btn.classList.remove("day-off");
+      }
+    };
+
+    row.appendChild(btn);
+  });
+}
+
+function renderLockDays(lock, index, container) {
+  const days = lock.days && lock.days.length > 0 ? lock.days : [...ALL_DAYS];
+
+  ALL_DAYS.forEach(day => {
+    const on = days.includes(day);
+
+    const btn = document.createElement("button");
+    btn.textContent = day;
+    btn.className = "day-btn day-mini " + (on ? "day-on" : "day-off");
+    btn.title = on ? `Blocks on ${day} — click to turn off` : `Does not block on ${day} — click to turn on`;
+
+    btn.onclick = () => {
+      api.storage.local.get(["timeLocks"], (result) => {
+        const locks = result.timeLocks || [];
+        const lockDays = Array.isArray(locks[index].days) ? locks[index].days : [...ALL_DAYS];
+
+        if (lockDays.includes(day)) {
+          locks[index].days = lockDays.filter(d => d !== day);
+        } else {
+          locks[index].days = ALL_DAYS.filter(d => lockDays.includes(d) || d === day);
+        }
+
+        // Saving triggers the streak reset in background.js
+        api.storage.local.set({ timeLocks: locks }, loadTimeLocks);
+      });
+    };
+
+    container.appendChild(btn);
+  });
+}
+
 function loadTimeLocks() {
   api.storage.local.get(["timeLocks"], (result) => {
     const locks = result.timeLocks || [];
@@ -86,12 +147,17 @@ function loadTimeLocks() {
       // Time range display
       const timeSpan = document.createElement("span");
       timeSpan.className = "lock-time " + (lock.enabled ? "lock-enabled" : "lock-disabled");
-      timeSpan.textContent = `${lock.startTime} – ${lock.endTime}`;
+      timeSpan.textContent = `${lock.startTime} \u2013 ${lock.endTime}`;
 
       // Optional label
       const labelSpan = document.createElement("span");
       labelSpan.className = "lock-label-text";
       labelSpan.textContent = lock.label ? `(${lock.label})` : "";
+
+      // Per-lock weekday toggles
+      const daysDiv = document.createElement("div");
+      daysDiv.className = "lock-days";
+      renderLockDays(lock, index, daysDiv);
 
       // Toggle button
       const toggleBtn = document.createElement("button");
@@ -106,6 +172,7 @@ function loadTimeLocks() {
 
       li.appendChild(timeSpan);
       li.appendChild(labelSpan);
+      li.appendChild(daysDiv);
       li.appendChild(toggleBtn);
       li.appendChild(removeBtn);
       list.appendChild(li);
@@ -127,15 +194,27 @@ document.getElementById("addLockBtn").addEventListener("click", () => {
     return;
   }
 
+  if (newLockDays.length === 0) {
+    alert("Please select at least one day for this lock.");
+    return;
+  }
+
   api.storage.local.get(["timeLocks"], (result) => {
     const locks = result.timeLocks || [];
-    locks.push({ startTime, endTime, label, enabled: true });
+    locks.push({ startTime, endTime, label, enabled: true, days: [...newLockDays] });
     api.storage.local.set({ timeLocks: locks }, loadTimeLocks);
   });
 
   document.getElementById("lockStart").value = "";
   document.getElementById("lockEnd").value = "";
   document.getElementById("lockLabel").value = "";
+
+  // Reset day selection back to all days ON
+  newLockDays = [...ALL_DAYS];
+  document.querySelectorAll("#newLockDays .day-btn").forEach(btn => {
+    btn.classList.add("day-on");
+    btn.classList.remove("day-off");
+  });
 });
 
 function removeTimeLock(index) {
@@ -208,5 +287,6 @@ api.storage.onChanged.addListener((changes, area) => {
 // INIT
 // ═══════════════════════════════════════════
 
+buildNewLockDayButtons();
 loadSites();
 loadTimeLocks();
